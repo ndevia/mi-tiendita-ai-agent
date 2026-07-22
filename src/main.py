@@ -1,11 +1,16 @@
 from pypdf import PdfReader
 
-reader = PdfReader("docs/manual.pdf")
-texto_extraido = ""
+file_path = "docs/manual.pdf"
 
-for pagina in reader.pages:
-    texto_extraido += pagina.extract_text()
 
-# texto_extraido = texto_extraido.replace("\n", " ")
+def read_pdf(file):
+    reader = PdfReader(file)
+    text = ""
 
-print(texto_extraido)
+    for page in reader.pages:
+        text += page.extract_text()
+
+    return text
+
+text = read_pdf(file_path)
+print(text)
