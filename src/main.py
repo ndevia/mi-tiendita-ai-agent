@@ -1,21 +1,22 @@
 from dotenv import load_dotenv
-from pypdf import PdfReader
 from langchain.agents import create_agent
+from utils import read_pdf, split_documents
 
 load_dotenv()
 
 
-def read_pdf(file):
-    reader = PdfReader(file)
-    text = ""
+file = "docs/manual.pdf"
+manual = read_pdf(file)
+chunks = split_documents(manual)
 
-    for page in reader.pages:
-        text += page.extract_text()
+print(f"Cantidad de páginas: {len(manual)}")
+print(f"Cantidad de fragmentos: {len(chunks)}")
 
-    return text
+print("\nPrimer fragmento:")
+print(chunks[0].page_content)
 
-
-manual = read_pdf("docs/manual.pdf")
+print("\nMetadata:")
+print(chunks[0].metadata)
 
 
 agent = create_agent(
