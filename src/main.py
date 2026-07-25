@@ -11,25 +11,9 @@ file = "docs/manual.pdf"
 manual = read_pdf(file)
 chunks = split_documents(manual)
 
-print(f"Cantidad de páginas: {len(manual)}")
-print(f"Cantidad de fragmentos: {len(chunks)}")
-
-print("\nPrimer fragmento:")
-print(chunks[0].page_content)
-
-print("\nMetadata:")
-print(chunks[0].metadata)
-
 embeddings = GoogleGenerativeAIEmbeddings(
     model="models/gemini-embedding-001"
 )
-
-# chunk_vectors = embeddings.embed_documents(
-#     [chunk.page_content for chunk in chunks]
-# )
-
-# print(f"Cantidad de vectores: {len(chunk_vectors)}")
-# print(f"Dimensiones del primer vector: {len(chunk_vectors[0])}")
 
 vector_store = FAISS.from_documents(
     documents=chunks,
@@ -79,4 +63,5 @@ result = agent.invoke(
     }
 )
 
-print(result["messages"][-1].content_blocks)
+response = result["messages"][-1].content_blocks[0]["text"]
+print(response)
