@@ -1,5 +1,6 @@
 from dotenv import load_dotenv
 from langchain.agents import create_agent
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from utils import read_pdf, split_documents
 
 load_dotenv()
@@ -17,6 +18,17 @@ print(chunks[0].page_content)
 
 print("\nMetadata:")
 print(chunks[0].metadata)
+
+embeddings = GoogleGenerativeAIEmbeddings(
+    model="models/gemini-embedding-001"
+)
+
+chunk_vectors = embeddings.embed_documents(
+    [chunk.page_content for chunk in chunks]
+)
+
+print(f"Cantidad de vectores: {len(chunk_vectors)}")
+print(f"Dimensiones del primer vector: {len(chunk_vectors[0])}")
 
 
 agent = create_agent(
