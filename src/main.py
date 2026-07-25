@@ -1,6 +1,7 @@
 from dotenv import load_dotenv
 from langchain.agents import create_agent
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_community.vectorstores import FAISS
 from utils import read_pdf, split_documents
 
 load_dotenv()
@@ -23,12 +24,29 @@ embeddings = GoogleGenerativeAIEmbeddings(
     model="models/gemini-embedding-001"
 )
 
-chunk_vectors = embeddings.embed_documents(
-    [chunk.page_content for chunk in chunks]
+# chunk_vectors = embeddings.embed_documents(
+#     [chunk.page_content for chunk in chunks]
+# )
+
+# print(f"Cantidad de vectores: {len(chunk_vectors)}")
+# print(f"Dimensiones del primer vector: {len(chunk_vectors[0])}")
+
+vector_store = FAISS.from_documents(
+    documents=chunks,
+    embedding=embeddings
 )
 
-print(f"Cantidad de vectores: {len(chunk_vectors)}")
-print(f"Dimensiones del primer vector: {len(chunk_vectors[0])}")
+question =  input("Haz una pregunta sobre Mi Tiendita: ")
+
+results = vector_store.similarity_search(
+    question,
+    k=3
+)
+
+context = "/n/n".join(
+    result.page_content
+    for result in results
+)
 
 
 agent = create_agent(
@@ -38,18 +56,16 @@ agent = create_agent(
         Eres un asistente especializado en el sistema Mi Tiendita.
 
         Responde las preguntas utilizando únicamente la información contenida
-        en el siguiente manual.
+        en el contexto proporcionado.
 
         No inventes información ni realices suposiciones que no estén respaldadas
-        por el manual. Si una información no aparece en el manual, indícalo
-        claramente.
+        por el contexto.
 
-        Manual:
-        {manual}
+        Contexto:
+        {context}
     """,
 )
 
-question =  input("Haz una pregunta sobre Mi Tiendita: ")
 
 result = agent.invoke(
     {
