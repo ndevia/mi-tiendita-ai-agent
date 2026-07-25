@@ -20,6 +20,10 @@ vector_store = FAISS.from_documents(
     embedding=embeddings
 )
 
+print("\n" + "=" * 60)
+print("🌱 MI TIENDITA - ASISTENTE")
+print("=" * 60)
+
 question =  input("Haz una pregunta sobre Mi Tiendita: ")
 
 results = vector_store.similarity_search(
@@ -64,4 +68,7 @@ result = agent.invoke(
 )
 
 response = result["messages"][-1].content_blocks[0]["text"]
+
+print("\n🤖 Respuesta:")
 print(response)
+print("\n" + "=" * 60)
