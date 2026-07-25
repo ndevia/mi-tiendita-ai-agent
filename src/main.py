@@ -31,7 +31,7 @@ results = vector_store.similarity_search(
     k=3
 )
 
-context = "/n/n".join(
+context = "\n\n".join(
     result.page_content
     for result in results
 )
